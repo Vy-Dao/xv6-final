@@ -392,3 +392,19 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
 //PAGEBREAK!
 // Blank page.
 
+//Lazy Page Allocation
+int handle_pgflt(uint address, struct proc* proc){
+  uint a = PGROUNDDOWN(address);
+  char *memory = kalloc();
+  if (memory == 0)
+  {
+    cprintf("Allocation Lazy Page - Out of memory \n");
+    return -1;
+  }
+  memset(memory,0,PGSIZE);
+ if (mappages(proc->pgdir, (char*)a, PGSIZE, V2P(memory), PTE_W | PTE_U) < 0) {
+    return -1;
+  }
+  return 0;
+    
+}

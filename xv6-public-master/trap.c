@@ -14,6 +14,7 @@ extern uint vectors[];  // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
 uint ticks;
 
+
 void
 tvinit(void)
 {
@@ -56,6 +57,15 @@ trap(struct trapframe *tf)
     }
     lapiceoi();
     break;
+
+  //Add Lazy Page Allocation case
+  case T_PGFLT:
+    if (handle_pgflt(rcr2(),myproc()) < 0)
+    {
+      myproc()->killed = 1;
+    }
+    break;
+
   case T_IRQ0 + IRQ_IDE:
     ideintr();
     lapiceoi();
